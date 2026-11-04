@@ -1267,7 +1267,7 @@ export default function StudyTracker() {
             {activeTab === "timer" && "Study Timer"}
             {activeTab === "buddies" && "Leaderboard"}
             {activeTab === "progress" && "Your Progress"}
-            {activeTab === "mock-tests" && "Mock Tests"}
+            {activeTab === "mock-tests" && "Mock Tracker"}
           </h1>
         </div>
         <div className="avatar">{initials(displayNameResolved)}</div>
@@ -1724,7 +1724,7 @@ export default function StudyTracker() {
           </button>
           <button className={`nav-item${activeTab === "mock-tests" ? " active" : ""}`} onClick={() => setActiveTab("mock-tests")}>
             <BookOpen size={18} />
-            <span>Mock Tests</span>
+            <span>Mocks</span>
           </button>
         </nav>
       )}
