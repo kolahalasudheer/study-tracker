@@ -29,6 +29,7 @@ import StudyCharts from "./StudyCharts";
 import StudyCalendar from "./StudyCalendar";
 import StudyProgress from "./StudyProgress";
 import StudyChat from "./StudyChat";
+import MockTests from "./MockTests";
 import ManualLogModal from "./ManualLogModal";
 import PomodoroSettingsModal, { DEFAULT_POMO_SETTINGS } from "./PomodoroSettingsModal";
 import { startContinuousAlarm, stopContinuousAlarm, playChime, unlockAudio } from "./soundUtils";
@@ -1266,6 +1267,7 @@ export default function StudyTracker() {
             {activeTab === "timer" && "Study Timer"}
             {activeTab === "buddies" && "Leaderboard"}
             {activeTab === "progress" && "Your Progress"}
+            {activeTab === "mock-tests" && "Mock Tests"}
           </h1>
         </div>
         <div className="avatar">{initials(displayNameResolved)}</div>
@@ -1690,6 +1692,10 @@ export default function StudyTracker() {
         />
       )}
 
+      {user && activeTab === "mock-tests" && (
+        <MockTests user={user} />
+      )}
+
       {user && activeTab === "chat" && (
         <StudyChat
           user={user}
@@ -1715,6 +1721,10 @@ export default function StudyTracker() {
           <button className={`nav-item${activeTab === "progress" ? " active" : ""}`} onClick={() => setActiveTab("progress")}>
             <BarChart3 size={18} />
             <span>Progress</span>
+          </button>
+          <button className={`nav-item${activeTab === "mock-tests" ? " active" : ""}`} onClick={() => setActiveTab("mock-tests")}>
+            <BookOpen size={18} />
+            <span>Mock Tests</span>
           </button>
         </nav>
       )}
