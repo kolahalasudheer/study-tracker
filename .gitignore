@@ -6,3 +6,6 @@ server/data
 .vercel
 .DS_Store
 .env*
+tmp/
+test-results/
+playwright-report/
