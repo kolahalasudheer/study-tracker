@@ -62,6 +62,13 @@ test('empty analytics show no fabricated results', () => {
   assert.equal(result.average, null); assert.equal(result.recentAverage, null);
   assert.equal(result.latest, undefined); assert.equal(result.loggedLoss, 0);
   assert.deepEqual(result.subjects, []); assert.deepEqual(result.topics, []);
+  assert.equal(result.highestMarks, null);
+});
+test('highest marks uses raw obtained marks, with newest breaking ties', () => {
+  const result = analyseMocks([mock('a', '2026-11-01', 45, 50), mock('b', '2026-11-02', 80, 120), mock('c', '2026-11-03', 80, 100)], [], []);
+  assert.equal(result.highestMarks.id, 'c');
+  assert.equal(result.highestMarks.marks_obtained, 80);
+  assert.equal(analyseMocks([mock('a', '2026-11-01', -5), mock('b', '2026-11-02', -2)], [], []).highestMarks.id, 'b');
 });
 test('error validation and CSV handle decimals, multiline quotes, optional links and spreadsheet formulas', () => {
   assert.deepEqual(validateError({ topic: 'Cache', error_type: 'Concept gap', marks_lost: '1.5', question_number: '' }), {});

@@ -96,7 +96,7 @@ function Workspace({ user }) {
   const stat = (label, value, note) => <article className="mocktests-stat"><span>{label}</span><strong>{value}</strong><small>{note}</small></article>;
   const tabIndex = TABS.indexOf(tab);
   return <main className="mocktests-page">
-    <header className="mocktests-heading"><div><p className="mocktests-eyebrow">MOCK TESTS</p><h2>Mock Tracker</h2></div><button ref={addButton} type="button" className="mocktests-button mocktests-button-primary" disabled={loading || saving} onClick={() => openEditor('mock')}>+ Add mock</button></header>
+    <header className="mocktests-heading"><p className="mocktests-eyebrow">MOCK TESTS</p><button ref={addButton} type="button" className="mocktests-button mocktests-button-primary" disabled={loading || saving} onClick={() => openEditor('mock')}>+ Add mock</button></header>
     <div className="mocktests-tabs" role="tablist" aria-label="Mock Tracker">{TABS.map((name, i) => <button key={name} id={`mock-tab-${i}`} role="tab" aria-selected={tab === name} aria-controls={`mock-panel-${i}`} tabIndex={tab === name ? 0 : -1} onClick={() => { setTab(name); setEditor(null); setDeleting(null); }} onKeyDown={event => {
       const index = event.key === 'ArrowRight' ? (i + 1) % 3 : event.key === 'ArrowLeft' ? (i + 2) % 3 : event.key === 'Home' ? 0 : event.key === 'End' ? 2 : null;
       if (index != null) { event.preventDefault(); setTab(TABS[index]); setEditor(null); setDeleting(null); document.getElementById(`mock-tab-${index}`)?.focus(); }
@@ -112,7 +112,7 @@ function Workspace({ user }) {
           {stat('Mocks taken', tests.length, profileId ? 'In this profile' : 'Across your mocks')}
           {stat('Latest score', formatPercent(analytics.latest ? scorePercent(analytics.latest) : null), analytics.latest ? `${formatNumber(analytics.latest.marks_obtained)} / ${formatNumber(analytics.latest.total_marks)}` : 'No mocks yet')}
           {stat(`Average of last ${analytics.recentCount || 3}`, formatPercent(analytics.recentAverage), analytics.recentCount < 3 ? `Based on ${analytics.recentCount} available mocks` : 'Mean of test percentages')}
-          {stat('Marks lost to errors', formatNumber(analytics.loggedLoss), `${errors.filter(e => e.marks_lost != null).length} errors with recorded loss`)}
+          {stat('Highest marks of all mocks', analytics.highestMarks ? `${formatNumber(analytics.highestMarks.marks_obtained)} / ${formatNumber(analytics.highestMarks.total_marks)}` : '—', analytics.highestMarks?.name || 'No mocks yet')}
         </div><section className="mocktests-card mocktests-panel"><div className="mocktests-section-title"><h3>All mocks</h3><span>{mocks.length} mocks</span></div>
           <Field id="mock-category-filter" label="Filter category"><select value={category} onChange={e => setCategory(e.target.value)}><option value="">All categories</option>{CATEGORIES.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></Field>
           {!mocks.length && <div className="mocktests-empty"><h3>{tests.length ? 'No mocks in this category' : 'Your next mock starts here'}</h3><p>Record a mock, capture what went wrong, and watch your progress over time.</p></div>}

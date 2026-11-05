@@ -64,6 +64,7 @@ export function mockPayload(form, profileId) {
 export function analyseMocks(tests, errors, subjects) {
   const ordered = [...tests].sort(newestFirst);
   const chronological = [...ordered].reverse();
+  const highestMarks = ordered.reduce((best, row) => !best || Number(row.marks_obtained) > Number(best.marks_obtained) ? row : best, null);
   const mean = rows => rows.length ? rows.reduce((sum, row) => sum + scorePercent(row), 0) / rows.length : null;
   const loggedLoss = errors.reduce((sum, row) => sum + (numberOrNull(row.marks_lost) || 0), 0);
   const topics = new Map();
@@ -85,7 +86,7 @@ export function analyseMocks(tests, errors, subjects) {
     subjectMap.set(key, group);
   }
   return {
-    ordered, chronological, latest: ordered[0], recentCount: Math.min(3, ordered.length), recentAverage: mean(ordered.slice(0, 3)), average: mean(ordered), loggedLoss,
+    ordered, chronological, latest: ordered[0], highestMarks, recentCount: Math.min(3, ordered.length), recentAverage: mean(ordered.slice(0, 3)), average: mean(ordered), loggedLoss,
     topics: [...topics.values()].sort((a, b) => b.value - a.value),
     causes: causes.map(c => ({ ...c, label: c.name, share: percent(c.value, loggedLoss) })),
     subjects: [...subjectMap.values()].map(g => ({ ...g, value: percent(g.marks, g.maximum) })).sort((a, b) => a.value - b.value),
