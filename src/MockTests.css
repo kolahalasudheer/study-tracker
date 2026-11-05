@@ -92,6 +92,11 @@
 .mocktests-legend { display: flex; flex-wrap: wrap; gap: 8px 12px; font-size: 10px; color: var(--mock-muted); }
 .mocktests-legend span { display: inline-flex; align-items: center; gap: 5px; }
 .mocktests-legend i { width: 7px; height: 7px; border-radius: 2px; }
+.mocktests-category-toggles { display: flex; flex-wrap: wrap; gap: 4px 12px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.mocktests-category-toggles legend { margin-bottom: 4px; font-size: 12px; color: var(--mock-muted); }
+.mocktests-category-toggles label { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 12px; cursor: pointer; }
+.mocktests-category-toggles input { width: 16px; height: 16px; margin: 0; accent-color: var(--category-color); }
+.mocktests-category-swatch { width: 14px; height: 3px; background: var(--category-color); border-radius: 2px; }
 .mocktests-form-region { scroll-margin-top: 16px; }
 .mocktests-form { max-width: 720px; }
 .mocktests-confirm p { font-size: 13px; line-height: 1.6; }

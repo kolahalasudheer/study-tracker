@@ -4,6 +4,8 @@ Integrated into the existing authenticated Study Tracker shell as the fifth bott
 
 The layout follows the PDF references: a horizontally scrollable mock table, compact mistake rows, and vertically stacked analysis cards with line, horizontal-bar and vertical stacked-column charts. Styling follows the other Study Tracker pages: the shared light glass cards, purple accents, rounded controls, font and background.
 
+The Mocks summary shows highest obtained marks (with its maximum and test name) in place of marks lost. Score trend and negative-mark trends each have independent category checkboxes and separate coloured lines for Full mock, Subject-wise, Mixed-subject and PYQ. Costliest topics and per-mock cause breakdowns are omitted from Analysis. Only the app shell displays the Mock Tracker title.
+
 Known reference gap: page 11's screenshot includes manually adding/removing topic tags and tapping tags to cycle weak/shaky/strong status. This implementation derives static topic tags from mistake logs; those manual tag controls are not implemented yet.
 
 ## Database setup
@@ -68,6 +70,6 @@ Browser tests use the installed Microsoft Edge in headless mode (`PLAYWRIGHT_CHA
 4. Check calculations against saved records, delete confirmation/cascades, sign-out, and all three tabs on phone/tablet.
 5. Owner reviews the preview and explicitly approves before merge to main or production deployment.
 
-Verified locally: 9 calculation/PostgreSQL tests and 3 browser acceptance tests pass; production build succeeds. Mobile screenshots above were visually inspected. Live Supabase/Google-account and hosted preview acceptance require a confirmed test project and remain separate release checks.
+Verified locally: 10 calculation/PostgreSQL tests and 4 browser acceptance tests pass; production build succeeds. Mobile screenshots above were visually inspected. Live Supabase/Google-account and hosted preview acceptance require a confirmed test project and remain separate release checks.
 
 Existing toolchain observations: the production build reports the application's existing bundle-size warning (about 521 kB minified). `npm audit` reports 4 advisories in the existing development dependency chains (`concurrently`/`shell-quote`, `source-map-js`, and Vite). Dependency upgrades are outside this feature change.

@@ -90,8 +90,9 @@ test('minimal mock, edit, linked mistake, filters, export, revision, reload and 
   expect(await readFile(await download.path(), 'utf8')).toContain('Deadlocks');
   await page.reload();
   await page.getByRole('tab', { name: 'Analysis', exact: true }).click();
-  await expect(page.locator('.mocktests-panel')).toHaveCount(8);
-  await expect(page.getByText('OS / Deadlocks', { exact: true })).toBeVisible();
+  await expect(page.locator('.mocktests-panel')).toHaveCount(6);
+  await expect(page.getByRole('heading', { name: 'Costliest topics', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Marks lost by cause per mock', exact: true })).toHaveCount(0);
   await expect(page.locator('.mocktests-column-chart').getByText('116.67%', { exact: true }).first()).toBeVisible();
   await page.getByRole('tab', { name: 'Error Log', exact: true }).click();
   await page.getByRole('button', { name: 'Undo revision' }).click();
@@ -128,8 +129,8 @@ test('three tabs fit mobile, landscape, tablet and desktop; capture mobile refer
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: `docs/mock-tracker/${slug}-mobile.png`, fullPage: true });
     if (name === 'Analysis') {
-      await expect(page.getByRole('img', { name: /Marks lost by cause per mock/ })).toBeVisible();
-      await expect(page.locator('.mocktests-column-chart')).toHaveCount(3);
+      await expect(page.getByRole('img', { name: /Score percentage by mock category/ })).toBeVisible();
+      await expect(page.locator('.mocktests-column-chart')).toHaveCount(1);
     }
   }
   for (const viewport of [{ width: 320, height: 640 }, { width: 812, height: 375 }, { width: 768, height: 1024 }, { width: 1440, height: 900 }]) {
@@ -162,4 +163,41 @@ test('validation, category filter, account changes and sign out', async ({ page 
   await expect(page.getByRole('heading', { name: 'Full mock 5' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Sign out fixture' }).click();
   await expect(page.getByText('Please sign in to use Mock Tracker.')).toBeVisible();
+});
+
+test('one title, highest raw marks, and independent category lines for score and negative marks', async ({ page }) => {
+  const store = await backend(page, true);
+  store.mock_tests.push(
+    { id: 'mixed-test', user_id: 'alice', created_at: '2026-11-03T12:00:00Z', name: 'Mixed practice', category: 'mixed', test_date: '2026-11-03', marks_obtained: 80, total_marks: 120, negative_marks: 1, subjects: [] },
+    { id: 'pyq-test', user_id: 'alice', created_at: '2026-11-04T12:00:00Z', name: 'PYQ practice', category: 'pyq', test_date: '2026-11-04', marks_obtained: 45, total_marks: 50, negative_marks: null, subjects: [] },
+  );
+  await page.goto('/tests/fixtures/mock-tracker.html');
+  await expect(page.getByRole('heading', { name: 'Mock Tracker', exact: true })).toHaveCount(1);
+  await expect(page.locator('.mocktests-page').getByRole('heading', { name: 'Mock Tracker', exact: true })).toHaveCount(0);
+  const highest = page.locator('.mocktests-stat').filter({ hasText: 'Highest marks of all mocks' });
+  await expect(highest).toContainText('80 / 120');
+  await expect(highest).toContainText('Mixed practice');
+  await expect(page.getByText('Marks lost to errors', { exact: true })).toHaveCount(0);
+  await page.getByRole('tab', { name: 'Analysis', exact: true }).click();
+  const score = page.locator('.mocktests-panel').filter({ has: page.getByRole('heading', { name: 'Score trend', exact: true }) });
+  const negative = page.locator('.mocktests-panel').filter({ has: page.getByRole('heading', { name: 'Negative marks', exact: true }) });
+  await expect(score.getByRole('checkbox')).toHaveCount(4);
+  await expect(negative.getByRole('checkbox')).toHaveCount(4);
+  await expect(score.locator('g[data-category]')).toHaveCount(4);
+  await expect(negative.locator('g[data-category]')).toHaveCount(3); // Missing PYQ negative marks stays missing.
+  await score.getByRole('checkbox', { name: /Full mock/ }).uncheck();
+  await expect(score.locator('g[data-category="full"]')).toHaveCount(0);
+  await expect(negative.locator('g[data-category="full"]')).toHaveCount(1);
+  await negative.getByRole('checkbox', { name: /Subject-wise/ }).uncheck();
+  await expect(negative.locator('g[data-category="subject"]')).toHaveCount(0);
+  await expect(score.locator('g[data-category="subject"]')).toHaveCount(1);
+  for (const checkbox of await score.getByRole('checkbox').all()) await checkbox.uncheck();
+  await expect(score.getByText('Select at least one mock category to display its trend.')).toBeVisible();
+  await score.getByRole('checkbox', { name: /PYQ/ }).check();
+  await expect(score.locator('g[data-category]')).toHaveCount(1);
+  await expect(score.locator('g[data-category="pyq"] circle')).toHaveCount(1);
+  for (const checkbox of await negative.getByRole('checkbox').all()) await checkbox.uncheck();
+  await negative.getByRole('checkbox', { name: /PYQ/ }).check();
+  await expect(negative.getByText('Add the relevant metrics to a mock to see this chart.')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
